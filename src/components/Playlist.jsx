@@ -40,6 +40,22 @@ function Playlist({ playlist, accessToken }) {
     }, 5000);
   }
 
+  async function justShuffle(playlist, accessToken) {
+    setClicked(true);
+    const tracks = await getPlaylistTracks(accessToken, playlist);
+    if (!tracks) {
+      setClicked(false);
+    }
+      const shuffledTracks = shuffle(tracks);
+    const newPlaylistId = await createPlaylist(accessToken, shuffledName);
+    await addTracksToPlaylist(accessToken, newPlaylistId, shuffledTracks);
+    setClicked(false);
+    setDone(true);
+    setTimeout(() => {
+      setDone(false);
+    }, 5000);
+  }
+
   return (
     <div className={styles.playlist}>
       <img src={playlist.images?.[0]?.url} alt="Playlist Image" />
@@ -70,6 +86,9 @@ function Playlist({ playlist, accessToken }) {
           </button>
           <button className="shuffle-by-album-sorted" onClick={() => shuffleByAlbum(playlist, accessToken, true)}>
             Shuffle by album and sort each album
+          </button>
+          <button className="just-shuffle" onClick={() => justShuffle(playlist, accessToken)}>
+            Just shuffle normally
           </button>
         </div>
       }
